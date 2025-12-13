@@ -27,7 +27,8 @@ document.documentElement.style.setProperty('--scene-bg', '#cfd7af')
 const blurOverlay = document.getElementById('blurOverlay');
 const loadingOverlay = document.getElementById('loadingOverlay')
 const loadingText = document.getElementById('loadingText');
-gsap.set(loadingText, { yPercent: 110, opacity: 0 });
+gsap.set(loadingText, { yPercent: 0, opacity: 1 });
+loadingText.textContent = '0%';
 const loadingManager = new THREE.LoadingManager()
 
 loadingManager.onProgress = (url, l, t) => {
