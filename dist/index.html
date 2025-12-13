@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Document</title>
+    <link rel="stylesheet" href="https://use.typekit.net/xet4zjv.css">
+  <script type="module" crossorigin src="/assets/index-C8F38tiM.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DgIhN7jv.css">
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-text-wrap">
+        <span class="loading-text" id="loadingText">0%</span>
+      </div>
+    </div>
+
+    <nav class="main-nav" id="mainNav">
+        <ul></ul>
+    </nav>
+
+    <canvas class="webgl"></canvas>
+
+    <div class="blur-overlay" id="blurOverlay"></div>
+
+    <div class="section-container">
+      <!-- Section0 -->
+      <div class="section-text intro active" id="section0">
+        <div class="intro-text-container">
+          <h1 class="intro-title reveal-text">Hi, I'm Yuri</h1>
+          <p class="intro-subtitle reveal-text">Welcome to my portfolio</p>
+        </div>
+
+        <div class="scroll-prompt" id="scrollPrompt">
+          <div class="chevron"></div>
+          <div class="chevron"></div>
+          <div class="chevron"></div>
+          <span class="text">Scroll down</span>
+        </div>
+      </div>
+
+      <div class="section-text" id="section1">
+        <h1 class="reveal-text">About me</h1>
+        <p class="reveal-text">エレベータを作る会社で、CGやVRの制作をしておりました。<br>会社を辞め、ワーキングホリデーで海外に行こうとしていたところコロナになり、断念。<br>その後、VRの学校に行きUnityの勉強をし、就職活動をしていたところ国境が開き、以前から申請していたワーキングホリデーに、、そして去年帰国。<br>渡航先では日常英会話、バリスタのスキルを習得。<br>現在就職活動中です。正直、経験もスキルも足りないと思います。<br>ただ、新しいことへのワクワクでき、チャレンジすることを楽しめます。<br>よろしくお願いします。</p>
+      </div>
+
+      <div class="section-text" id="section2">
+        <h1 class="reveal-text">Works <br>→CG/VR</h1>
+        <p class="reveal-text">エレベータを作る会社で、顧客プレゼン用/カタログ用のエレベーターパースやUnrealEngineでVR制作をしておりました。<br>その後、さらにVRを勉強するため短期間学校へ行き、Unityなどを習得。<br>主に3dsMaxやUnityを中心に複数ソフトを使用しVRやCGを作ることができます。</p>
+        <button class="view-more-btn" aria-label="View more" data-modal="cgvr">
+          <svg class="btn-plus-svg" viewBox="0 0 100 100">
+            <defs>
+              <mask id="plusMask1">
+                <rect width="100" height="100" fill="white"/>
+                <rect x="30" y="45" width="40" height="10" rx="3" fill="black"/>
+                <rect x="45" y="30" width="10" height="40" rx="3" fill="black"/>
+              </mask>
+            </defs>
+            <circle cx="50" cy="50" r="50" fill="white" mask="url(#plusMask1)"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="section-text" id="section3">
+        <h1 class="reveal-text">Works <br>→BARISTA</h1>
+        <p class="reveal-text">海外のコーヒーショップでヘッドバリスタとして働いておりました。<br>エスプレッソマシンでのコーヒーの抽出、ラテアート、グラインダーの調整などをすることができます。<br>観光地の忙しいカフェで働いていたため、プレッシャーなどにも強いです。</p>
+        <button class="view-more-btn" aria-label="View more" data-modal="barista">
+          <svg class="btn-plus-svg" viewBox="0 0 100 100">
+            <defs>
+              <mask id="plusMask2">
+                <rect width="100" height="100" fill="white"/>
+                <rect x="30" y="45" width="40" height="10" rx="3" fill="black"/>
+                <rect x="45" y="30" width="10" height="40" rx="3" fill="black"/>
+              </mask>
+            </defs>
+            <circle cx="50" cy="50" r="50" fill="white" mask="url(#plusMask2)"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="section-text" id="section4">
+        <h1 class="reveal-text">INTERACTIVE<br>ART</h1>
+        <p class="reveal-text">TouchDesignerを使用して,インタラクティブに体験できるアートを作成しております。<br>ここからThree.jsにも興味を持ち、Web上でもインタラクティブに体験できるものができるようになればと日々勉強中。</p>
+        <button class="view-more-btn" aria-label="View more" data-modal="interactive">
+          <svg class="btn-plus-svg" viewBox="0 0 100 100">
+            <defs>
+              <mask id="plusMask3">
+                <rect width="100" height="100" fill="white"/>
+                <rect x="30" y="45" width="40" height="10" rx="3" fill="black"/>
+                <rect x="45" y="30" width="10" height="40" rx="3" fill="black"/>
+              </mask>
+            </defs>
+            <circle cx="50" cy="50" r="50" fill="white" mask="url(#plusMask3)"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="section-text" id="section5">
+        <h1 class="reveal-text" style="font-size:4rem;">Thanks for visiting my portfolio</h1>
+        <div class="contact-container">
+          <p class="reveal-text">Contact<br><span style="font-size: 1rem;">お気軽にご連絡ください</span></p>
+          
+          <form action="https://formspree.io/f/xeoyldaq" method="POST" class="contact-form">
+            <div class="form-group">
+              <input type="text" id="name" name="name" placeholder="お名前" required>
+            </div>
+            
+            <div class="form-group">
+              <input type="email" id="email" name="email" placeholder="メールアドレス" required>
+            </div>
+            
+            <div class="form-group">
+              <textarea id="message" name="message" placeholder="メッセージ" rows="4" required></textarea>
+            </div>
+            
+            <button type="submit" class="submit-btn">
+              <span>Send</span>
+            </button>
+          </form>
+        </div>
+    </div>
+
+    <div class="transition-overlay"></div>
+
+    <div class="detail-page">
+      <div class="detail-content">
+        <div id="worksGrid" class="cards-grid works-grid"></div>
+        <p style="height:20vh;"></p>
+        <p>一番下までスクロールすると閉じます。</p>
+      </div>
+    </div>
+
+    <div id="hoverTooltip" class="hover-tooltip" role="tooltip" aria-hidden="true">
+      <div class="hover-tooltip__content">
+        <strong>Yuri (human)</strong>
+        <div class="hover-tooltip__desc">クリックで詳細はありません。ホバーのみのヒント表示です。</div>
+      </div>
+    </div>
+
+     <div id="rippleContainer">
+      <div class="hover-point" data-ripple="human" aria-hidden="true">
+        <span class="hover-point__ring"></span>
+        <span class="hover-point__dot"></span>
+      </div>
+      <div class="hover-point" data-ripple="backpack" aria-hidden="true">
+        <span class="hover-point__ring"></span>
+        <span class="hover-point__dot"></span>
+      </div>
+      <div class="hover-point" data-ripple="lod" aria-hidden="true">
+        <span class="hover-point__ring"></span>
+        <span class="hover-point__dot"></span>
+      </div>
+      <div class="hover-point" data-ripple="house_car" aria-hidden="true">
+        <span class="hover-point__ring"></span>
+        <span class="hover-point__dot"></span>
+      </div>
+      <div class="hover-point" data-ripple="house_coffee" aria-hidden="true">
+        <span class="hover-point__ring"></span>
+        <span class="hover-point__dot"></span>
+      </div>
+      <div class="hover-point" data-ripple="house_sheep" aria-hidden="true">
+        <span class="hover-point__ring"></span>
+        <span class="hover-point__dot"></span>
+      </div>
+      <!-- 追加: drink と cake -->
+      <div class="hover-point" data-ripple="house_drink" aria-hidden="true">
+        <span class="hover-point__ring"></span>
+        <span class="hover-point__dot"></span>
+      </div>
+      <div class="hover-point" data-ripple="house_cake" aria-hidden="true">
+        <span class="hover-point__ring"></span>
+        <span class="hover-point__dot"></span>
+      </div>
+    </div>
+
+</body>
+</html>

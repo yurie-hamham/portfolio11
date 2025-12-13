@@ -11,7 +11,7 @@ export default defineConfig({
     open: true        // サーバ起動時にブラウザ自動オープン
   },
   build: {
-    outDir: '../dist',   // ビルド出力先（rootからの相対パス）
+    outDir: 'dist',   // ビルド出力先（rootからの相対パス）
     emptyOutDir: true,   // ビルド前に出力先を空にする
     sourcemap: true     // ソースマップ生成（開発用）
   },
