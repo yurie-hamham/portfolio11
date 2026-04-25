@@ -2153,6 +2153,7 @@ window.addEventListener('touchstart', e => {
   // モーダルが開いている場合はセクション移動用のタッチを記録しない
   if (detailPage.classList.contains('is-visible')) return;
   if (isOpeningModal) return;
+   if (e.target.closest('.section-text p')) return;
   if (e.touches.length !== 1) return;
   touchStartY = e. touches[0].clientY;
   touchStartX = e. touches[0].clientX;
@@ -2203,6 +2204,9 @@ let prevMouseY = 0;
 let mouseSpeed = 0;
 let starspeed=0;
 
+// ▼追加：連続処理を防ぐためのタイマー変数
+let raycastTimer = null; 
+
 canvas.addEventListener('pointermove', e => {
   if (isMobile) {
     hideTooltip();
@@ -2212,108 +2216,193 @@ canvas.addEventListener('pointermove', e => {
   lastPointer.x = e.clientX;
   lastPointer.y = e.clientY;
 
-  const rect = canvas.getBoundingClientRect();
-  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-  raycaster.setFromCamera(mouse, camera);
+  // ▼追加：タイマーが動いている間（50ミリ秒以内）は計算をスキップする
+  if (raycastTimer) return;
 
- if (currentSectionIndex === 1 && humanGroup. visible) {
-  const hitsHuman = humanRayTargets.length
-    ? raycaster.intersectObjects(humanRayTargets, false)
-    : [];
+  // 50ミリ秒後に1回だけ計算を実行する
+  raycastTimer = setTimeout(() => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((lastPointer.x - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((lastPointer.y - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
 
-  if (hitsHuman.length > 0) {
-    const hitName = hitsHuman[0].object.name;
-
-    if (hitName === 'human_ray_mesh') {
-      setTooltipContent('英語力','日常英会話ができます');
-      hideRippleTemporarily('human');
-    } else if (hitName === 'backpack_ray_mesh') {
-      setTooltipContent('旅行好き', 'お祭りに参加しに行きます');
-      hideRippleTemporarily('backpack');
-    }else if (hitName === 'lod_ray_mesh') {
-      setTooltipContent('釣り', 'お祭りに参加しに行きます');
-      hideRippleTemporarily('lod');
+    // --- セクション1の判定 ---
+    if (currentSectionIndex === 1 && humanGroup.visible) {
+      const hitsHuman = humanRayTargets.length ? raycaster.intersectObjects(humanRayTargets, false) : [];
+      if (hitsHuman.length > 0) {
+        const hitName = hitsHuman[0].object.name;
+        if (hitName === 'human_ray_mesh') { setTooltipContent('英語力','日常英会話ができます'); hideRippleTemporarily('human'); }
+        else if (hitName === 'backpack_ray_mesh') { setTooltipContent('旅行好き', 'お祭りに参加しに行きます'); hideRippleTemporarily('backpack'); }
+        else if (hitName === 'lod_ray_mesh') { setTooltipContent('釣り', 'お祭りに参加しに行きます'); hideRippleTemporarily('lod'); }
+        showTooltip(lastPointer.x, lastPointer.y - 20);
+      } else {
+        hideTooltip(); restoreRipple('human'); restoreRipple('backpack'); restoreRipple('lod');
+      }
     }
 
-    showTooltip(lastPointer.x, lastPointer. y - 20);
-    return;
-  } else {
-    hideTooltip();
-    restoreRipple('human');
-    restoreRipple('backpack');
-    restoreRipple('lod');
-    return;
-  }
-}
+    // --- セクション4以降の判定 ---
+    if (currentSectionIndex >= 4 && stars.length > 0) {
+      const hitStar = raycaster.intersectObjects(stars, true);
+      const dx = mouse.x - prevMouseX;
+      const dy = mouse.y - prevMouseY;
+      mouseSpeed = Math.sqrt(dx * dx + dy * dy);
+      prevMouseX = mouse.x;
+      prevMouseY = mouse.y;
 
- if (currentSectionIndex >= 4 && stars. length > 0) {
-  const hitStar = raycaster.intersectObjects(stars, true);
-  const dx = mouse.x - prevMouseX;
-  const dy = mouse. y - prevMouseY;
-  mouseSpeed = Math.sqrt(dx * dx + dy * dy);
-  prevMouseX = mouse. x;
-  prevMouseY = mouse. y;
-
-  if (hitStar.length > 0) {
-    let hitObject = hitStar[0]. object;
-    let foundIndex = -1;
-    while (hitObject) {
-      foundIndex = stars.indexOf(hitObject);
-      if (foundIndex !== -1) break;
-      hitObject = hitObject.parent;
+      if (hitStar.length > 0) {
+        let hitObject = hitStar[0].object;
+        let foundIndex = -1;
+        while (hitObject) {
+          foundIndex = stars.indexOf(hitObject);
+          if (foundIndex !== -1) break;
+          hitObject = hitObject.parent;
+        }
+        if (foundIndex !== -1) {
+          const direction = dx >= 0 ? 1 : -1;
+          starSpeeds[foundIndex] += mouseSpeed * 100 * direction;
+          const maxSpeed = 300;
+          starSpeeds[foundIndex] = Math.max(-maxSpeed, Math.min(maxSpeed, starSpeeds[foundIndex]));
+        }
+        setTooltipContent('⭐ Star', 'マウスで回転！');
+        showTooltip(lastPointer.x, lastPointer.y - 20);
+      } else {
+        hideTooltip();
+      }
     }
+
+    // --- セクション2〜3の判定 ---
+    if (currentSectionIndex >= 2 && 3 >= currentSectionIndex && houseRayRoot) {
+      const hitsHouse = raycaster.intersectObject(houseRayRoot, true);
+      if (hitsHouse.length > 0) {
+        const hitName = hitsHouse[0].object.name;
+        if (hitName === 'ray_car') { setTooltipContent('車', '普通自動車免許を所持しています。'); hideRippleTemporarily('house_car'); }
+        else if (hitName === 'ray_machine') { setTooltipContent('エスプレッソ抽出', '１日に5~7kgほどの<br>コーヒー豆を処理していました。'); hideRippleTemporarily('house_coffee'); }
+        else if (hitName === 'ray_coffee') { setTooltipContent('ドリンク', 'ラテアートやカクテルなどの様々なドリンクを作れます。'); hideRippleTemporarily('house_drink'); }
+        else if (hitName === 'ray_sheep') { setTooltipContent('羊', '羊・ヤギの牧場で働いていました。'); hideRippleTemporarily('house_sheep'); }
+        else if (hitName === 'ray_cake') { setTooltipContent('ケーキ', 'カフェではケーキを作り販売していました。'); hideRippleTemporarily('house_cake'); }
+        showTooltip(lastPointer.x, lastPointer.y - 20);
+      } else {
+        hideTooltip();
+        restoreRipple('house_car'); restoreRipple('house_coffee'); restoreRipple('house_sheep'); restoreRipple('house_drink'); restoreRipple('house_cake');
+      }
+    }
+
+    // ▼計算が終わったらタイマーを空にして、次の入力を受け付けるようにする
+    raycastTimer = null;
+
+  }, 50); // 50ミリ秒ごとに制限（ここの数字を大きくするとさらに軽くなります）
+});
+// canvas.addEventListener('pointermove', e => {
+//   if (isMobile) {
+//     hideTooltip();
+//     return;
+//   }
+
+//   lastPointer.x = e.clientX;
+//   lastPointer.y = e.clientY;
+
+//   const rect = canvas.getBoundingClientRect();
+//   mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+//   mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+//   raycaster.setFromCamera(mouse, camera);
+
+//  if (currentSectionIndex === 1 && humanGroup. visible) {
+//   const hitsHuman = humanRayTargets.length
+//     ? raycaster.intersectObjects(humanRayTargets, false)
+//     : [];
+
+//   if (hitsHuman.length > 0) {
+//     const hitName = hitsHuman[0].object.name;
+
+//     if (hitName === 'human_ray_mesh') {
+//       setTooltipContent('英語力','日常英会話ができます');
+//       hideRippleTemporarily('human');
+//     } else if (hitName === 'backpack_ray_mesh') {
+//       setTooltipContent('旅行好き', 'お祭りに参加しに行きます');
+//       hideRippleTemporarily('backpack');
+//     }else if (hitName === 'lod_ray_mesh') {
+//       setTooltipContent('釣り', 'お祭りに参加しに行きます');
+//       hideRippleTemporarily('lod');
+//     }
+
+//     showTooltip(lastPointer.x, lastPointer. y - 20);
+//     return;
+//   } else {
+//     hideTooltip();
+//     restoreRipple('human');
+//     restoreRipple('backpack');
+//     restoreRipple('lod');
+//     return;
+//   }
+// }
+
+//  if (currentSectionIndex >= 4 && stars. length > 0) {
+//   const hitStar = raycaster.intersectObjects(stars, true);
+//   const dx = mouse.x - prevMouseX;
+//   const dy = mouse. y - prevMouseY;
+//   mouseSpeed = Math.sqrt(dx * dx + dy * dy);
+//   prevMouseX = mouse. x;
+//   prevMouseY = mouse. y;
+
+//   if (hitStar.length > 0) {
+//     let hitObject = hitStar[0]. object;
+//     let foundIndex = -1;
+//     while (hitObject) {
+//       foundIndex = stars.indexOf(hitObject);
+//       if (foundIndex !== -1) break;
+//       hitObject = hitObject.parent;
+//     }
     
-    if (foundIndex !== -1) {
-      const direction = dx >= 0 ? 1 : -1;
-      starSpeeds[foundIndex] += mouseSpeed * 100 * direction;
-      const maxSpeed = 300;
-      starSpeeds[foundIndex] = Math. max(-maxSpeed, Math. min(maxSpeed, starSpeeds[foundIndex]));
-    }
+//     if (foundIndex !== -1) {
+//       const direction = dx >= 0 ? 1 : -1;
+//       starSpeeds[foundIndex] += mouseSpeed * 100 * direction;
+//       const maxSpeed = 300;
+//       starSpeeds[foundIndex] = Math. max(-maxSpeed, Math. min(maxSpeed, starSpeeds[foundIndex]));
+//     }
     
-    setTooltipContent('⭐ Star', 'マウスで回転！');
-    showTooltip(lastPointer. x, lastPointer.y - 20);
-    return;
-  } else {
-    hideTooltip();
-  }
-}
-  if (currentSectionIndex >= 2 && 3 >= currentSectionIndex && houseRayRoot) {
-  const hitsHouse = raycaster.intersectObject(houseRayRoot, true);
+//     setTooltipContent('⭐ Star', 'マウスで回転！');
+//     showTooltip(lastPointer. x, lastPointer.y - 20);
+//     return;
+//   } else {
+//     hideTooltip();
+//   }
+// }
+//   if (currentSectionIndex >= 2 && 3 >= currentSectionIndex && houseRayRoot) {
+//   const hitsHouse = raycaster.intersectObject(houseRayRoot, true);
   
-  if (hitsHouse. length > 0) {
-    const hitName = hitsHouse[0].object.name;
+//   if (hitsHouse. length > 0) {
+//     const hitName = hitsHouse[0].object.name;
     
-    if (hitName === 'ray_car') {
-      setTooltipContent('車', '普通自動車免許を所持しています。');
-      hideRippleTemporarily('house_car');
-    } else if (hitName === 'ray_machine') {
-      setTooltipContent('エスプレッソ抽出', '１日に5~7kgほどの<br>コーヒー豆を処理していました。');
-      hideRippleTemporarily('house_coffee');
-    } else if (hitName === 'ray_coffee') {
-      setTooltipContent('ドリンク', 'ラテアートやカクテルなどの様々なドリンクを作れます。');
-      hideRippleTemporarily('house_drink');
-    } else if (hitName === 'ray_sheep') {
-      setTooltipContent('羊', '羊・ヤギの牧場で働いていました。');
-      hideRippleTemporarily('house_sheep');
-    } else if (hitName === 'ray_cake') {
-      setTooltipContent('ケーキ', 'カフェではケーキを作り販売していました。');
-      hideRippleTemporarily('house_cake');
-    }
+//     if (hitName === 'ray_car') {
+//       setTooltipContent('車', '普通自動車免許を所持しています。');
+//       hideRippleTemporarily('house_car');
+//     } else if (hitName === 'ray_machine') {
+//       setTooltipContent('エスプレッソ抽出', '１日に5~7kgほどの<br>コーヒー豆を処理していました。');
+//       hideRippleTemporarily('house_coffee');
+//     } else if (hitName === 'ray_coffee') {
+//       setTooltipContent('ドリンク', 'ラテアートやカクテルなどの様々なドリンクを作れます。');
+//       hideRippleTemporarily('house_drink');
+//     } else if (hitName === 'ray_sheep') {
+//       setTooltipContent('羊', '羊・ヤギの牧場で働いていました。');
+//       hideRippleTemporarily('house_sheep');
+//     } else if (hitName === 'ray_cake') {
+//       setTooltipContent('ケーキ', 'カフェではケーキを作り販売していました。');
+//       hideRippleTemporarily('house_cake');
+//     }
     
-    showTooltip(lastPointer.x, lastPointer.y - 20);
-    return;
-  } else {
-    hideTooltip();
-    restoreRipple('house_car');
-    restoreRipple('house_coffee');
-    restoreRipple('house_sheep');
-    restoreRipple('house_drink');
-    restoreRipple('house_cake');
-    return;
-  }
-}
-})
+//     showTooltip(lastPointer.x, lastPointer.y - 20);
+//     return;
+//   } else {
+//     hideTooltip();
+//     restoreRipple('house_car');
+//     restoreRipple('house_coffee');
+//     restoreRipple('house_sheep');
+//     restoreRipple('house_drink');
+//     restoreRipple('house_cake');
+//     return;
+//   }
+// }
+// })
 
 canvas.addEventListener('pointerleave', () => {
   if (isMobile) return;
