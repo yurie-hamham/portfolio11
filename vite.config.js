@@ -13,7 +13,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',   // ビルド出力先（rootからの相対パス）
     emptyOutDir: true,   // ビルド前に出力先を空にする
-    sourcemap: true     // ソースマップ生成（開発用）
+    sourcemap: false     // ソースマップ生成（開発用）
   },
   plugins: [
     wasm(),
