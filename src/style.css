@@ -597,11 +597,16 @@ html, body { overflow:hidden; font-family:sans-serif; }
 .scroll-prompt {
   position:fixed; bottom:15vh; left:50%; transform:translateX(-50%);
   height:24px; opacity:0; transition:opacity .5s ease-in-out; z-index:100;
+  width: 100px;
+  display: flex;
+  justify-content: center;
 }
 .scroll-prompt.visible { opacity:1; }
 .scroll-prompt .chevron {
   position:absolute; width:28px; height:8px; opacity:0;
   transform:scale3d(.5,.5,.5); animation:move 3s ease-out infinite;
+  left: 50%;
+  margin-left: -14px; 
 }
 .scroll-prompt .chevron:first-child { animation:move 3s ease-out 1s infinite; }
 .scroll-prompt .chevron:nth-child(2) { animation:move 3s ease-out 2s infinite; }
@@ -618,7 +623,7 @@ html, body { overflow:hidden; font-family:sans-serif; }
   100% { opacity:0; transform:translateY(55px) scale3d(.5,.5,.5); }
 }
 .scroll-prompt .text {
-  display:block; margin-top:75px; margin-left:-30px;
+  display:block; margin-top:75px; margin-left:0px;
   font-size:12px; color:#fff; text-transform:uppercase; white-space:nowrap;
   opacity:.25; animation:pulse 2s linear alternate infinite;
 }
@@ -961,7 +966,7 @@ html, body { overflow:hidden; font-family:sans-serif; }
     right: 0;
     width: 100%;
     height: 100%;
-    padding:  20px 20px 24px;
+    padding:  25px 20px 10px;
     text-align: center;
     display: flex;
     flex-direction:  column;
@@ -1062,7 +1067,7 @@ html, body { overflow:hidden; font-family:sans-serif; }
     width: var(--button-circle-size);
     height: var(--button-circle-size);
     margin-top: auto;
-    margin-bottom: 10px;
+    margin-bottom: 25px;
   }
 
   /* ホバー系は非表示 */
@@ -1139,6 +1144,58 @@ html, body { overflow:hidden; font-family:sans-serif; }
   #section5 .form-group textarea {
     font-size: 16px; /* iOS zoom防止 */
   }
+
+  .dot-nav {
+  position: fixed;
+  top: 25%; /* 上半分の位置（数字を変えれば上下に移動します） */
+  right: 15px; /* 右端からの距離 */
+  transform: translateY(-50%);
+  z-index: 10000;
+  /* ▼ ここから追加：最初は見えないようにする ▼ */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease; /* ふわっと現れるアニメーション */
+}
+
+.dot-nav.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dot-nav ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 🔴丸の大きさが変わっても中心がズレないようにする魔法 */
+  gap: 15px; /* 丸と丸の間の隙間 */
+  padding: 0;
+  margin: 0;
+}
+
+.dot-nav li {
+  width: 6px; /* 小さい丸の大きさ */
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.4); /* 半透明の白 */
+  transition: all 0.3s ease; /* ふわっと大きさが変わるアニメーション */
+  cursor: pointer;
+}
+
+/* 今いるセクション（アクティブな丸）のデザイン */
+.dot-nav li.active {
+  width: 10px; /* 大きい丸の大きさ */
+  height: 10px;
+  background-color: rgba(255, 255, 255, 1); /* くっきりした白 */
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5); /* ほんのり光らせる */
+}
+
+/* PC版では横文字のメニューがあるので、ドットを隠す場合は以下のコメントを外してください */
+/*
+@media (min-width: 901px) {
+  .dot-nav { display: none; }
+}
+*/
+
 }
 
 @media (max-width: 480px) {

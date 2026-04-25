@@ -1730,6 +1730,40 @@ function updateActiveState(newIndex, oldIndex) {
   if (sectionAnimLock) return;
   sectionAnimLock = true;
   
+   // ▼▼▼ ここから追加：最後のセクション(5)なら矢印を消し、それ以外なら表示する ▼▼▼
+  const scrollPrompt = document.getElementById('scrollPrompt');
+  if (scrollPrompt) {
+    if (newIndex === sectionDivs.length - 1) { // 最後のセクション（5）の場合
+      scrollPrompt.classList.remove('visible');
+    } else { // それ以外のセクションの場合
+      scrollPrompt.classList.add('visible');
+    }
+  }
+  // ▲▲▲ ここまで追加 ▲▲▲
+
+  // ▼▼▼ 今回追加：ドットナビゲーションの更新 ▼▼▼
+  // ▼▼▼ 今回追加・変更：ドットナビゲーションの更新 ▼▼▼
+  const dotNav = document.getElementById('dotNav');
+  const dotNavItems = document.querySelectorAll('#dotNav li');
+  
+  // 1. セクション0の時はナビ全体を隠し、1以降なら表示する
+  if (dotNav) {
+    if (newIndex === 0) {
+      dotNav.classList.remove('visible');
+    } else {
+      dotNav.classList.add('visible');
+    }
+  }
+
+  // 2. アクティブな丸の切り替え
+  if (dotNavItems.length > 0) {
+    dotNavItems.forEach((dot, index) => {
+      // セクション0の丸を消したため、「今の丸の順番 ＝ 今のセクション番号 - 1」になります
+      dot.classList.toggle('active', index === (newIndex - 1));
+    });
+  }
+  // ▲▲▲ ここまで追加・変更 ▲▲▲
+  // ▲▲▲ ここまで追加 ▲▲▲
 
   const prevEl = sectionDivs[oldIndex];
   const newEl = sectionDivs[newIndex];
