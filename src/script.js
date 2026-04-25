@@ -124,7 +124,7 @@ window.addEventListener('resize', () => {
   camera.aspect = sizes.width / sizes.height
   camera.updateProjectionMatrix()
   renderer.setSize(sizes.width, sizes.height)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1))
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
 })
 
 //cam
@@ -142,7 +142,7 @@ function showWithLayer(obj) {
 //render
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true })
 renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1))
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setClearColor('#cfd7af')
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
@@ -2153,7 +2153,9 @@ window.addEventListener('touchstart', e => {
   // モーダルが開いている場合はセクション移動用のタッチを記録しない
   if (detailPage.classList.contains('is-visible')) return;
   if (isOpeningModal) return;
-   if (e.target.closest('.section-text p')) return;
+  if (e.target.closest('.section-text p') || e.target.closest('.contact-container')) {
+    return;
+  }
   if (e.touches.length !== 1) return;
   touchStartY = e. touches[0].clientY;
   touchStartX = e. touches[0].clientX;
@@ -2241,34 +2243,35 @@ canvas.addEventListener('pointermove', e => {
     }
 
     // --- セクション4以降の判定 ---
-    if (currentSectionIndex >= 4 && stars.length > 0) {
-      const hitStar = raycaster.intersectObjects(stars, true);
-      const dx = mouse.x - prevMouseX;
-      const dy = mouse.y - prevMouseY;
-      mouseSpeed = Math.sqrt(dx * dx + dy * dy);
-      prevMouseX = mouse.x;
-      prevMouseY = mouse.y;
+    // 星に対してマウスの動きの速さに応じて回転速度を変えるインタラクションは、パフォーマンスの観点から一旦保留とする
+    // if (currentSectionIndex >= 4 && stars.length > 0) {
+    //   const hitStar = raycaster.intersectObjects(stars, true);
+    //   const dx = mouse.x - prevMouseX;
+    //   const dy = mouse.y - prevMouseY;
+    //   mouseSpeed = Math.sqrt(dx * dx + dy * dy);
+    //   prevMouseX = mouse.x;
+    //   prevMouseY = mouse.y;
 
-      if (hitStar.length > 0) {
-        let hitObject = hitStar[0].object;
-        let foundIndex = -1;
-        while (hitObject) {
-          foundIndex = stars.indexOf(hitObject);
-          if (foundIndex !== -1) break;
-          hitObject = hitObject.parent;
-        }
-        if (foundIndex !== -1) {
-          const direction = dx >= 0 ? 1 : -1;
-          starSpeeds[foundIndex] += mouseSpeed * 100 * direction;
-          const maxSpeed = 300;
-          starSpeeds[foundIndex] = Math.max(-maxSpeed, Math.min(maxSpeed, starSpeeds[foundIndex]));
-        }
-        setTooltipContent('⭐ Star', 'マウスで回転！');
-        showTooltip(lastPointer.x, lastPointer.y - 20);
-      } else {
-        hideTooltip();
-      }
-    }
+    //   if (hitStar.length > 0) {
+    //     let hitObject = hitStar[0].object;
+    //     let foundIndex = -1;
+    //     while (hitObject) {
+    //       foundIndex = stars.indexOf(hitObject);
+    //       if (foundIndex !== -1) break;
+    //       hitObject = hitObject.parent;
+    //     }
+    //     if (foundIndex !== -1) {
+    //       const direction = dx >= 0 ? 1 : -1;
+    //       starSpeeds[foundIndex] += mouseSpeed * 100 * direction;
+    //       const maxSpeed = 300;
+    //       starSpeeds[foundIndex] = Math.max(-maxSpeed, Math.min(maxSpeed, starSpeeds[foundIndex]));
+    //     }
+    //     setTooltipContent('⭐ Star', 'マウスで回転！');
+    //     showTooltip(lastPointer.x, lastPointer.y - 20);
+    //   } else {
+    //     hideTooltip();
+    //   }
+    // }
 
     // --- セクション2〜3の判定 ---
     if (currentSectionIndex >= 2 && 3 >= currentSectionIndex && houseRayRoot) {
@@ -2437,14 +2440,15 @@ function tick() {
   camera.lookAt(cameraLookAtTarget);
   world.step()
 
-  if (!isMobile) {
-    stars.forEach((star, i) => {
-      if (Math.abs(starSpeeds[i]) > 0.01) {
-        star.rotation.y += starSpeeds[i] * dt;
-        starSpeeds[i] *= 0.98;
-      }
-    });
-  }
+  // 星の回転速度を減衰させる（マウスインタラクション用）
+  // if (!isMobile) {
+  //   stars.forEach((star, i) => {
+  //     if (Math.abs(starSpeeds[i]) > 0.01) {
+  //       star.rotation.y += starSpeeds[i] * dt;
+  //       starSpeeds[i] *= 0.98;
+  //     }
+  //   });
+  // }
 
   updateAllRipplePositions();
 

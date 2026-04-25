@@ -772,7 +772,7 @@ html, body { overflow:hidden; font-family:sans-serif; }
   border-radius: 8px;
   outline: none;
   transition: all 0.3s ease;
-  backdrop-filter: blur(8px);
+ /* backdrop-filter: blur(8px);*/
   box-sizing: border-box;
 }
 
@@ -1153,5 +1153,62 @@ html, body { overflow:hidden; font-family:sans-serif; }
   .section-text p {
     font-size: 1rem;
     line-height: 1.5;
+  }
+}
+
+/* ==============================
+   スマホ版：セクション1と5のスクロール・スワイプエリア調整
+================================= */
+@media (max-width: 900px) {
+
+  /* ▼▼▼ ここから追加・変更 ▼▼▼ */
+  /* セクション5の見出しを画面上部の3D背景エリアに移動させる */
+  #section5 {
+    overflow: visible !important;
+  }
+  #section5 h1 {
+    position: absolute;
+    top: -26vh; /* ここで文字の高さを調整できます（マイナスにすると上に行きます） */
+    left: 20px;
+    right: 20px;
+    text-align: center !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* 文字が見やすいように少し影をつける */
+  }
+  /* ▲▲▲ ここまで ▲▲▲ */
+
+  /* ① 文字エリアとフォームエリアの縦幅を少し短くして、下に空間をあける */
+  #section1 p {
+    max-height: 28vh; /* 画面高さの28%に制限 */
+  }
+  
+  #section5 .contact-container {
+    max-height: 40vh; /* h1が外に出た分、フォームを少し広く（34vh→40vh）できます */
+    overflow-y: auto; /* はみ出た分は内側でスクロールできるようにする */
+    padding-right: 8px;
+    margin-top: 10px;
+  }
+
+  /* ② セクション5のフォーム用スクロールバーの見た目（pタグと同じにする） */
+  #section5 .contact-container::-webkit-scrollbar {
+    width: 4px;
+  }
+  #section5 .contact-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+  }
+  #section5 .contact-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.822);
+    border-radius: 2px;
+  }
+
+  /* ③ セクション1と5の一番下に、セクション2のボタンと同じ高さの「透明な箱（スワイプ専用エリア）」を作る */
+  #section1::after,
+  #section5::after {
+    content: "";
+    display: block;
+    min-height: 75px; 
+    width: 100%;
+    flex-shrink: 0;
+    margin-top: auto; 
   }
 }
