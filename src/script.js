@@ -2269,7 +2269,7 @@ canvas.addEventListener('pointermove', e => {
         const hitName = hitsHuman[0].object.name;
         if (hitName === 'human_ray_mesh') { setTooltipContent('英語力','日常英会話ができます'); hideRippleTemporarily('human'); }
         else if (hitName === 'backpack_ray_mesh') { setTooltipContent('旅行好き', 'お祭りに参加しに行きます'); hideRippleTemporarily('backpack'); }
-        else if (hitName === 'lod_ray_mesh') { setTooltipContent('釣り', 'お祭りに参加しに行きます'); hideRippleTemporarily('lod'); }
+        else if (hitName === 'lod_ray_mesh') { setTooltipContent('釣り', '漁港から、のんびり釣りをするのが好きです。'); hideRippleTemporarily('lod'); }
         showTooltip(lastPointer.x, lastPointer.y - 20);
       } else {
         hideTooltip(); restoreRipple('human'); restoreRipple('backpack'); restoreRipple('lod');
