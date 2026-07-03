@@ -995,16 +995,15 @@ html, body { overflow:hidden; font-family:sans-serif; }
   }
 
   .section-text p {
-    max-width: 90vw;
-    font-size: 1.5rem;
-    line-height:   1.55;
-    margin-bottom: 16px;
-    /* text-align: center; */
-    overflow-y: auto;
-    padding-right: 8px;
-    text-align: left;
-    -webkit-overflow-scrolling: touch;
-  }
+  max-width: 90vw;
+  font-size: 1.5rem;
+  line-height: 1.55;
+  margin-bottom: 16px;
+  padding-right: 8px;
+  text-align: left;
+  overflow: visible;
+  -webkit-overflow-scrolling: auto;
+}
 
   /* Section1 の p 要素にスクロールバーを追加 */
   /* #section1 p {
